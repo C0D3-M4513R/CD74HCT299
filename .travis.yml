@@ -1,0 +1,22 @@
+os: linux
+dist: bionic
+language: cpp
+compiler: gcc
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc
+      - g++
+      -
+before_install:
+  - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
+  - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
+script:
+  #Tell cmake the compilers, to use
+  - export CC=gcc
+  - export CXX=g++
+  #check, that the pakages are actually installed
+  - gcc -v && g++ -v && cmake --version
+  - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON
