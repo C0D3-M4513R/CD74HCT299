@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <algorithm>
 #include <wiringPi.h>
-#include <time.h>
+#include <ctime>
 
 using namespace std;
 
@@ -52,7 +52,7 @@ void arginit(int argc, char **argv) {
                 verbose = true;
                 break;
             case 's':
-                speed = atoi(optarg);
+                speed = strtol(optarg, nullptr,10);
                 break;
             case 'c':
                 if (verbose)cout << "Clearing" << endl;
@@ -67,9 +67,9 @@ void arginit(int argc, char **argv) {
                 if (verbose)cout << "Filled" << endl;
                 break;
             case 'V':
-                value = atoi(optarg);
+                value = strtol(optarg, nullptr,10);
                 reading = false;
-                if (verbose)cout << bit << ":" << value << endl;
+                if (verbose) cout << bit << ":" << value << endl;
                 switch (value) {
                     case 1:
                     case 0:
@@ -180,7 +180,7 @@ int main(int argc, char **argv) {
     wiringPiSetupPhys();
     //disable Output
     //Maybe that screws stuff up? disabling for testing.
-    digitalWrite(OE, false);
+    digitalWrite(OE, true);
 
     arginit(argc, argv);
 
@@ -193,20 +193,29 @@ int main(int argc, char **argv) {
         struct timespec remaining={};
         sleep.tv_sec=0;
         sleep.tv_nsec=50;
+
+        //load inputs, hold , read
+
         //parallel load
         digitalWrite(CE0,true);
         digitalWrite(CE1,true);
         nanosleep(&sleep,&remaining);//wait for the chip
-        //Pulse clock
+        //Pulse clock to actually load
         digitalWrite(SCLK,false);
         digitalWrite(SCLK,true);
         nanosleep(&sleep,&remaining);//wait for the chip
         digitalWrite(SCLK,false);
-        //Now make sure, that we don't continually
-        //override values from previous pins passing through
-        //the last pin to the output, and thus only getting 0x00 or 0xff (and some transitional values)
-        digitalWrite(OE, true);
+
+        //reset load state to hold, to prevent a continuous
+        digitalWrite(CE0,false);
+        digitalWrite(CE1,false);
         nanosleep(&sleep,&remaining);//wait for the chip
+
+        //Pulse Clock to propagate changes
+        digitalWrite(SCLK,false);
+        digitalWrite(SCLK,true);
+        nanosleep(&sleep,&remaining);//wait for the chip
+        digitalWrite(SCLK,false);
     }
     //now write with spi
     spimsg();
