@@ -5,4 +5,15 @@ This is a c++ cli implementation for the CD74HCT299
 
 Reading from IO Pins is currently WIP, but should work.
 This Repo is currently restricted to Raspberry Pi only, because i'm currently using wiringPi.
- 
+
+## Compilation
+If you want to compile this project, use those commands in order:
+`
+#cd
+#cd Downloads
+git clone https://github.com/C0D3-M4513R/CD74HCT299.git
+cd CD74HCT299
+cmake .
+make
+`
+Afterwards you should find a file named untitled in the Directory CD74HCT299.
