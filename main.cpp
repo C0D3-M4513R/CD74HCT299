@@ -174,13 +174,9 @@ int main(int argc, char **argv) {
     const int CE0 = 24;
     const int CE1 = 26;
     const int SCLK = 23;
-    const int OE = 22;
 
 //    Feel free to replace with another library, but this is rn the easiest solution
     wiringPiSetupPhys();
-    //disable Output
-    //Maybe that screws stuff up? disabling for testing.
-    digitalWrite(OE, true);
 
     arginit(argc, argv);
 
@@ -194,7 +190,7 @@ int main(int argc, char **argv) {
         sleep.tv_sec=0;
         sleep.tv_nsec=50;
 
-        //load inputs, hold , read
+        //load inputs, load to registers, hold, read
 
         //parallel load
         digitalWrite(CE0,true);
@@ -206,7 +202,18 @@ int main(int argc, char **argv) {
         nanosleep(&sleep,&remaining);//wait for the chip
         digitalWrite(SCLK,false);
 
-        //reset load state to hold, to prevent a continuous
+        //parallel load
+        digitalWrite(CE0,true);
+        digitalWrite(CE1,true);
+        nanosleep(&sleep,&remaining);//wait for the chip
+        //Pulse clock to actually load
+        digitalWrite(SCLK,false);
+        digitalWrite(SCLK,true);
+        nanosleep(&sleep,&remaining);//wait for the chip
+        digitalWrite(SCLK,false);
+
+
+        //reset load state to hold and disable input to prevent a continuous override of data
         digitalWrite(CE0,false);
         digitalWrite(CE1,false);
         nanosleep(&sleep,&remaining);//wait for the chip
@@ -223,11 +230,7 @@ int main(int argc, char **argv) {
     if(reading){
         digitalWrite(CE0,false);
         digitalWrite(CE1,false);
-        digitalWrite(OE, false);
-
     }
-    //disable Output
-//    digitalWrite(OE, true);
 
     //print data, if we actually read stuff
     printf("Received following data:\n");
