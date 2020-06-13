@@ -17,10 +17,14 @@ cmake .
 make
 ```
 Afterwards you should find a file named untitled in the Directory CD74HCT299.
-#Pins
+# Pins
 The Following pins are used:
 * 19 &larr; Q7
 * 21: &rarr; DS0
 * 23: &rarr; CP
 * 24: &rarr; S0
 * 26: &rarr; S1
+
+## License
+This Repository is decicated to public domain and uses the UNLICENSE License. 
+See more in the LICENSE file.
